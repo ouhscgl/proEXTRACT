@@ -6,7 +6,7 @@
     },
     "file_patterns": {
         "eprime": {
-            "base_pattern": "NIRS_Nback (short)__NR-in-aging-{subject_num}-{version}",
+            "base_pattern": "NR-in-aging-{subject_num}-{version}",
             "extensions": ["txt", "html", "edat3", "xml"]
         },
         "eeg": {
