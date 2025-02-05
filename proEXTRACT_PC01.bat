@@ -1,7 +1,7 @@
 @echo off
 :start
 cls
-python C:\Projects\_extensions\proEXTRACT\proEXTRACT_PC01.py %1
+python C:\Projects\_extensions\proEXTRACT\proEXTRACT_PC01.py --config="%~1"
 echo.
 echo Process complete.
 echo.
