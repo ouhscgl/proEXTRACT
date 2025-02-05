@@ -23,6 +23,9 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
             print(f"Error accessing config file: {str(e)}")
             return
 
+    dest_root = config['destination_base'].format(
+        subject_prefix = search_text[:3])    
+
     # E-Prime file search
     eprime_config = config['file_patterns']['eprime']
     base_pattern  = eprime_config['base_pattern'].format(
@@ -36,9 +39,10 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
         if matching_files:
             print(f"Found {len(matching_files)} E-Prime files:")
             for file in matching_files:
-                source_path = os.path.join(search_paths[0], file)
+                source_path = os.path.join(config['search_paths']['eprime'],
+                                           file)
                 ext = os.path.splitext(file)[1]
-                destination_path = os.path.join(destination_bases[0], 
+                destination_path = os.path.join(dest_root, 'NIR_COG', 
                                                 f'{search_text}_NIR_NBK_COG{ext}')
                 try:
                     shutil.copyfile(source_path, destination_path)
@@ -54,17 +58,17 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
     
     # EEG file search
     try:
-        files = os.listdir(search_paths[1])
+        files = os.listdir(config['search_paths']['eeg'])
         edf_file = [f for f in files if f.startswith(f'{search_text}_EPOCX') and f.endswith('00.edf')]
         csv_file = [f for f in files if f.startswith(f'{search_text}_EPOCX') and f.endswith('_intervalMarker.csv')]
         
         if edf_file and csv_file:
-            edf_path = os.path.join(search_paths[1], edf_file[0])
-            csv_path = os.path.join(search_paths[1], csv_file[0])
+            edf_path = os.path.join(config['search_paths']['eeg'], edf_file[0])
+            csv_path = os.path.join(config['search_paths']['eeg'], csv_file[0])
             print(f"Found match in: {edf_file[0]}")
-            eeg_dest_path = os.path.join(destination_bases[1], 
+            eeg_dest_path = os.path.join(dest_root, 'EEG_DAT', 
                                          f'{search_text}_EEG_NBK_DAT.edf')
-            csv_dest_path = os.path.join(destination_bases[1], 
+            csv_dest_path = os.path.join(dest_root, 'EEG_DAT',  
                                          f'{search_text}_EEG_NBK_MRK.csv')
             try:
                 shutil.copyfile(edf_path, eeg_dest_path)
@@ -85,7 +89,8 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
         f"{search_text}_SubjectTrialLog.mat",
         f"{search_text}_SubjectTimeLog.mat"]
     try:
-        subject_folder = os.path.join(search_paths[2], f'{search_text[:6]}')
+        subject_folder = os.path.join(config['search_paths']['matlab'], 
+                                      f'{search_text[:6]}')
         files = os.listdir(subject_folder)
         found_files = []
         for pattern in mat_patterns:
@@ -94,9 +99,9 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
         
         if len(found_files) == 2:
             print(f"Found match in: {subject_folder}")
-            str_path = os.path.join(destination_bases[2], 
+            str_path = os.path.join(dest_root, 'EEG_COG',
                                     f'{search_text}_SubjectTrialLog.mat')
-            stl_path = os.path.join(destination_bases[2], 
+            stl_path = os.path.join(dest_root, 'EEG_COG',
                                     f'{search_text}_SubjectTimeLog.mat')
             try:
                 shutil.copyfile(found_files[0], str_path)
@@ -121,15 +126,3 @@ if __name__ == "__main__":
     print('-'*50)
     
     search_inf_files(search_text=user_input, config_path = args.config)
-    #     search_paths=[
-    #         r'C:\Users\biochemlab\Documents\E-Prime\_NR-in-aging\.storage',
-    #         r'C:\Projects\NRA\.data\EEG\raw',
-    #         r'C:\Users\biochemlab\Documents\MATLAB\EEG_nback'
-    #     ],
-    #     search_text=user_input,
-    #     destination_bases=[
-    #         rf'C:\Projects\{user_input[:3]}\NIR_COG',
-    #         rf'C:\Projects\{user_input[:3]}\EEG_DAT',
-    #         rf'C:\Projects\{user_input[:3]}\EEG_COG'
-    #     ]
-    # )
