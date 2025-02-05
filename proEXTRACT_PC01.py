@@ -3,21 +3,35 @@
 import os
 import shutil
 import re
+import sys
+import argparse
+import json
 
-def search_inf_files(search_paths=None, search_text="NRAXXX_V3", destination_bases=None):
+def search_inf_files(search_text="NRAXXX_V3", config_path=None):
     '''
     Export Manager written for fNIRS Setup v2.0 / [1] PC
-    2025.01.30
+    2025.01.30 @ZBK
     '''
-    if search_paths is None:
-        search_paths = ["C:\\NIRx\\Data"] * 3
-    if destination_bases is None:
-        destination_bases = ["C:\\NIRx\\Data"] * 3
+    if config_path is None:
+       print('Please provide a config file.')
+       return
+    else:
+        try:
+            with open(config_path,'r') as f:
+                config = json.load(f)
+        except Exception as e:
+            print(f"Error accessing config file: {str(e)}")
+            return
 
     # E-Prime file search
-    epr_pattern = re.compile(rf"NIRS_Nback \(short\)__NR-in-aging-{search_text[3:6]}-{search_text[-1]}\.(?:txt|html|edat3|xml)$")
+    eprime_config = config['file_patterns']['eprime']
+    base_pattern  = eprime_config['base_pattern'].format(
+        subject_num = search_text[4:6],
+        version = search_text[-1])
+    extensions = eprime_config['extensions']
+    epr_pattern = re.compile(rf"{base_pattern}\.(?:{'|'.join(extensions)})$")
     try:
-        files = os.listdir(search_paths[0])
+        files = os.listdir(config['search_paths']['eprime'])
         matching_files = [f for f in files if epr_pattern.match(f)]
         if matching_files:
             print(f"Found {len(matching_files)} E-Prime files:")
@@ -34,6 +48,7 @@ def search_inf_files(search_paths=None, search_text="NRAXXX_V3", destination_bas
             print('-'*50)
         else:
             print(f"No matching E-Prime files found for {search_text}")
+            print('-'*50)
     except Exception as e:
         print(f"Error accessing folder: {str(e)}")
     
@@ -61,6 +76,7 @@ def search_inf_files(search_paths=None, search_text="NRAXXX_V3", destination_bas
                 print(f'Error copying file: {str(e)}')
         else:
             print(f"No matching EEG files found for {search_text}")
+            print('-'*50)
     except Exception as e:
         print(f"Error accessing folder: {str(e)}")
     
@@ -92,22 +108,28 @@ def search_inf_files(search_paths=None, search_text="NRAXXX_V3", destination_bas
                 print(f'Error copying file: {str(e)}')
         else:
             print(f"No matching MATLAB files found for {search_text}")
+            print('-'*50)
     except Exception as e:
         print(f"Error accessing folder: {str(e)}")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config')
+    args = parser.parse_args()
+    
     user_input = input('Enter subject ID (e.g.: UTC001_V1): ')
     print('-'*50)
-    search_inf_files(
-        search_paths=[
-            'C:\\NIRx\\Data',
-            'C:\\NIRx\\Data',
-            'C:\\NIRx\\Data'
-        ],
-        search_text=user_input,
-        destination_bases=[
-            f'C:\\Projects\\{user_input[:3]}',
-            f'C:\\Projects\\{user_input[:3]}',
-            f'C:\\Projects\\{user_input[:3]}'
-        ]
-    )
+    
+    search_inf_files(search_text=user_input, config_path = args.config)
+    #     search_paths=[
+    #         r'C:\Users\biochemlab\Documents\E-Prime\_NR-in-aging\.storage',
+    #         r'C:\Projects\NRA\.data\EEG\raw',
+    #         r'C:\Users\biochemlab\Documents\MATLAB\EEG_nback'
+    #     ],
+    #     search_text=user_input,
+    #     destination_bases=[
+    #         rf'C:\Projects\{user_input[:3]}\NIR_COG',
+    #         rf'C:\Projects\{user_input[:3]}\EEG_DAT',
+    #         rf'C:\Projects\{user_input[:3]}\EEG_COG'
+    #     ]
+    # )
