@@ -1,0 +1,38 @@
+{
+    "search_paths": {
+        "eprime": "C:\\Users\\biochemlab\\Documents\\E-Prime\\_NR-in-aging\\.storage",
+        "eeg": "C:\\Projects\\NRA\\.data\\EEG\raw",
+        "matlab": "C:\\Users\\biochemlab\\Documents\\MATLAB\\EEG_nback"
+    },
+    "file_patterns": {
+        "eprime": {
+            "base_pattern": "NIRS_Nback (short)__NR-in-aging-{subject_num}-{version}",
+            "extensions": ["txt", "html", "edat3", "xml"]
+        },
+        "eeg": {
+            "patterns": [
+                "{search_text}_EPOCX*00.edf",
+                "{search_text}_EPOCX*_intervalMarker.csv"
+            ]
+        },
+        "matlab": {
+            "patterns": [
+                "{search_text}_SubjectTrialLog.mat",
+                "{search_text}_SubjectTimeLog.mat"
+            ],
+            "subfolder_pattern": "{search_text[:6]}"
+        }
+    },
+    "output_naming": {
+        "eprime": "{search_text}_NIR_NBK_COG{ext}",
+        "eeg": [
+            "{search_text}_EEG_NBK_DAT.edf",
+            "{search_text}_EEG_NBK_MRK.csv"
+        ],
+        "matlab": [
+            "{search_text}_SubjectTrialLog.mat",
+            "{search_text}_SubjectTimeLog.mat"
+        ]
+    },
+    "destination_base": "C:\\Projects\\{subject_prefix}"
+}
