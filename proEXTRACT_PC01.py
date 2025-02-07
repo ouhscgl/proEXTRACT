@@ -29,13 +29,12 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
     # E-Prime file search
     eprime_config = config['file_patterns']['eprime']
     base_pattern  = eprime_config['base_pattern'].format(
-        subject_num = f"(?:0*{search_text[4:6]}|{search_text[3:6]})",
+        subject_num = f"0*{search_text[4:6]}",
         version = search_text[-1])
-    extensions = eprime_config['extensions']
-    epr_pattern = re.compile(f"{base_pattern}\.(?:{'|'.join(extensions)})$")
+    epr_pattern = re.compile(base_pattern)
     try:
         files = os.listdir(config['search_paths']['eprime'])
-        matching_files = [f for f in files if epr_pattern.match(f)]
+        matching_files = [f for f in files if epr_pattern.search(f)]
         if matching_files:
             print(f"Found {len(matching_files)} E-Prime files:")
             for file in matching_files:
