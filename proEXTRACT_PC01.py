@@ -27,9 +27,16 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
         subject_prefix = search_text[:3])    
 
     # E-Prime file search
+    sn = f"0*{search_text[4:6]}"
+    try:
+        if int(search_text[3:6]) > 99:
+            sn = f"{search_text[3:6]}"
+    except:
+        print('Subject number is 3 digits, dummy!')
+        
     eprime_config = config['file_patterns']['eprime']
     base_pattern  = eprime_config['base_pattern'].format(
-        subject_num = f"0*{search_text[4:6]}",
+        subject_num = sn,
         version = search_text[-1])
     epr_pattern = re.compile(base_pattern)
     try:
