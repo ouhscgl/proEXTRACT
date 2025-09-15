@@ -1,7 +1,7 @@
 @echo off
 :start
 cls
-python C:\Projects\_extensions\proEXTRACT\proEXTRACT_PC02.py --config="%~1"
+python C:\Projects\_extensions\proEXTRACT\proEXTRACT_PC02.py --config="C:\\Projects\\_extensions\\proEXTRACT\\base_config2.json"
 echo.
 echo Process complete.
 echo.

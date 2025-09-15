@@ -1,0 +1,26 @@
+{
+    "search_paths": {
+        "nir": "C:\\NIRx\\Data",
+        "eeg": "C:\\Emotiv_data"
+    },
+    "file_patterns": {
+        "nir": {
+            "base_pattern": "NR-in-aging-{subject_num}-{version}",
+            "extensions": ["txt", "html", "edat3", "xml"]
+        },
+        "eeg": {
+            "patterns": [
+                "{search_text}_EPOCX*00.edf",
+                "{search_text}_EPOCX*_intervalMarker.csv"
+            ]
+        }
+    },
+    "output_naming": {
+        "nir": "{search_text}_NIR_NBK_COG{ext}",
+        "eeg": [
+            "{search_text}_EEG_NBK_DAT.edf",
+            "{search_text}_EEG_NBK_MRK.csv"
+        ]
+    },
+    "destination_base": "C:\\Projects\\{subject_prefix}"
+}

@@ -9,7 +9,7 @@ import json
 
 def search_inf_files(search_text="NRAXXX_V3", config_path=None):
     '''
-    Export Manager written for fNIRS Setup v2.0 / [1] PC
+    Export Manager written for fNIRS Setup v2.0 / [2] PC
     2025.01.30 @ZBK
     '''
     if config_path is None:
@@ -26,8 +26,15 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
     dest_root = config['destination_base'].format(
         subject_prefix = search_text[:3])    
 
+    # Create destination directories if they don't exist
+    os.makedirs(dest_root, exist_ok=True)
+    os.makedirs(os.path.join(dest_root, 'EEG_DAT'), exist_ok=True)
+    os.makedirs(os.path.join(dest_root, 'NIR_DAT'), exist_ok=True)
+
+    # NIRx file search
+    found_match = False
     try:
-        search_path = r'C:\Users\biochemlab\Documents\NIRx\Data'
+        search_path = config['search_paths']['nir']
         for root, dirs, files in os.walk(search_path):
             inf_files = [f for f in files if f.lower().endswith('.inf')]
             for file in inf_files:
@@ -37,6 +44,7 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
                         content = f.read()
                         
                     if search_text in content:
+                        found_match = True
                         source_folder = os.path.dirname(full_path)
                         folder_name = search_text + '_NIR_'
                         if 'fingertapping' in content:
@@ -45,9 +53,11 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
                             folder_name += 'NBK'
                         else:
                             print(f'Stimulus uncertain in file {file}.')
-                        destination_folder = os.path.join(dest_root, folder_name)
+                            folder_name += 'DAT'  # Default suffix
+                        
+                        destination_folder = os.path.join(dest_root, 'NIR_DAT', folder_name)
                         try:
-                            shutil.copytree(source_folder, 'NIR_DAT', destination_folder)
+                            shutil.copytree(source_folder, destination_folder)
                             print(f'{source_folder} >>> {destination_folder}')
                         except Exception as e:
                             print(f'Error copying folder {source_folder}: {str(e)}')
@@ -60,9 +70,10 @@ def search_inf_files(search_text="NRAXXX_V3", config_path=None):
     
     except Exception as e:
         print(f"Error accessing directory: {str(e)}")
-        return
-    else:
-        print("\nNo matches found")
+    
+    if not found_match:
+        print(f"No matching NIRx files found for {search_text}")
+        print('-'*50)
     
     # EEG file search
     try:
